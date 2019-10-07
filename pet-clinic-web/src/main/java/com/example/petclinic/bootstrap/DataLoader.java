@@ -1,11 +1,9 @@
 package com.example.petclinic.bootstrap;
 
-import com.example.petclinic.model.Owner;
-import com.example.petclinic.model.Pet;
-import com.example.petclinic.model.PetType;
-import com.example.petclinic.model.Vet;
+import com.example.petclinic.model.*;
 import com.example.petclinic.services.OwnerService;
 import com.example.petclinic.services.PetTypeService;
+import com.example.petclinic.services.SpecialitiesService;
 import com.example.petclinic.services.VetService;
 import com.example.petclinic.services.map.OwnerServiceMap;
 import com.example.petclinic.services.map.VetServiceMap;
@@ -21,15 +19,29 @@ public class DataLoader implements CommandLineRunner {
     private final OwnerService ownerService;
     private final VetService vetService;
     private final PetTypeService petTypeService;
+    private final SpecialitiesService specialitiesService;
 
-    public DataLoader(OwnerService ownerService, VetService vetService, PetTypeService petTypeService) {
+    public DataLoader(OwnerService ownerService, VetService vetService, PetTypeService petTypeService, SpecialitiesService specialitiesService) {
         this.ownerService = ownerService;
         this.vetService = vetService;
         this.petTypeService = petTypeService;
+        this.specialitiesService = specialitiesService;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        int count = petTypeService.findAll().size();
+
+        if(count == 0){
+            loadData();
+        }
+    }
+
+    private void loadData() {
+        Speciality quantumBellyscratching = new Speciality();
+        quantumBellyscratching.setDescription("Dogs love it, drives cats up the wall");
+
+        Speciality savedQuantumBellyscratching = specialitiesService.save(quantumBellyscratching);
 
         PetType dog = new PetType();
         dog.setName("dog");
@@ -79,12 +91,14 @@ public class DataLoader implements CommandLineRunner {
         Vet vet1 = new Vet();
         vet1.setFirstName("Sam");
         vet1.setLastName("Bungleton");
+        vet1.getSpeciality().add(savedQuantumBellyscratching);
 
         vetService.save(vet1);
 
         Vet vet2 = new Vet();
         vet2.setFirstName("Samington");
         vet2.setLastName("Bungle");
+        vet2.getSpeciality().add(savedQuantumBellyscratching);
 
         vetService.save(vet2);
 
